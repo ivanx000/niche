@@ -1,15 +1,19 @@
-# Sami
+# React Native Boilerplate
 
-A React Native focus and productivity app that helps users manage distractions and track focused work sessions toward personal goals.
+A modern React Native starter template built with Expo, TypeScript, and best practices. Includes pre-built screens, theme system, i18n support, state management setup, and EAS build configuration.
 
-## What It Does
+## What's Included
 
-Sami lets users:
-- Create and manage focus goals
-- Run timed focus sessions with a countdown timer
-- Block distracting apps on a customizable schedule
-- Log post-session reflections and focus scores
-- View weekly insights and analytics per goal
+This boilerplate comes with:
+- Pre-built generic screens (Home, Onboarding, Paywall, Settings, Legal, Error)
+- Reusable UI component library
+- Light and dark theme system with custom colors and typography
+- Multi-language i18n setup (EN, ES, FR, AR, HI, JA, KO)
+- State management with React Context API and MMKV persistent storage
+- Navigation setup with React Navigation (native-stack, bottom-tabs)
+- Dev and production configuration management
+- Debugging and testing infrastructure
+- EAS build profiles for iOS and Android
 
 ## Tech Stack
 
@@ -33,46 +37,37 @@ Sami lets users:
 
 ```
 app/
-├── screens/          # Feature screens (Login, Goals, GoalDetail, FocusSession, Reflection, Insights)
-├── context/          # Global state (AuthContext, GoalContext, SessionContext, AppBlockContext)
-├── navigators/       # Navigation setup (App, Main, Goals navigators + types)
-├── components/       # Reusable UI components
+├── screens/          # Pre-built screens (Home, Onboarding, Paywall, Settings, Legal, Error)
+├── context/          # Global state management (AppStateContext, etc.)
+├── navigators/       # Navigation setup (App, Main navigators + types)
+├── components/       # Reusable UI component library
 ├── theme/            # Colors, typography, spacing, dark/light theme system
-├── hooks/            # useAppIcons (iTunes API), useInstalledApps
-├── models/           # TypeScript types (Goal, FocusSession, BlockedApp, TimeFrame)
+├── hooks/            # Shared hooks for common patterns
+├── models/           # TypeScript type definitions
 ├── services/api/     # apisauce API client + error handling
-├── utils/            # Storage (MMKV wrapper), notifications, date formatting
+├── utils/            # Storage (MMKV wrapper), helpers, formatters
 ├── i18n/             # Translation files per language
-├── config/           # Dev/prod API endpoints + base config
-├── data/             # Curated app list (70+ apps across social, gaming, video, etc.)
+├── config/           # Dev/prod configuration + base setup
 └── devtools/         # Reactotron config
 assets/
 ├── icons/
 └── images/
 ```
 
-## Screens
+## Included Screens
 
 | Screen | Description |
 |---|---|
-| **Login** | Email-based auth with validation |
-| **Goals** | Main dashboard — goal cards, weekly stats, create new goals |
-| **Goal Detail** | Edit goal, manage blocked apps, configure time-based blocking schedules, drag-to-group apps |
-| **Focus Session** | Animated circular countdown timer, pause/resume/end controls |
-| **Reflection** | Post-session feedback — what you accomplished, focus score (1–5), distraction tracking |
-| **Insights** | Weekly bar charts and stats (sessions, minutes, avg focus score) per goal |
+| **Home** | Main entry point — customize with your app's primary content |
+| **Onboarding** | User introduction flow — ready to adapt for your setup/tutorial needs |
+| **Paywall** | Monetization screen — template for subscription or premium features |
+| **Settings** | Settings and user preferences — theme toggle, language selection, etc. |
+| **Legal** | Terms and privacy — static content screens |
+| **Error** | Error boundary screen — handles crashes gracefully |
 
-## Key Data Models
+## State Management
 
-**Goal** — `id`, `name`, `accentColor`, `createdAt`, `isArchived`
-
-**FocusSession** — `goalId`, `startedAt`, `endedAt`, `plannedDuration`, `actualDuration`, `reflection`, `focusScore` (1–5), `wasDistracted`, `distractionNote`, `completedFully`
-
-**BlockedApp** — `name`, `blockedForever`, `timeFrames[]`, `groupId` (for drag-grouped apps)
-
-**TimeFrame** — `startTime`, `endTime`, `days[]` (0=Sun–6=Sat)
-
-All data is persisted locally with MMKV — no backend required.
+The boilerplate uses React Context API for global state with MMKV for persistent local storage. Define your data models and contexts in `app/models/` and `app/context/` — no backend required unless you add one.
 
 ## Getting Started
 
@@ -112,26 +107,22 @@ npm run depcruise:graph # Generate dependency graph SVG
 npm run adb             # Android reverse port forwarding (dev)
 ```
 
-## Theme
+## Theme System
 
-Sami uses a custom theme system with light ("Warm Paper") and dark mode support, toggled automatically from system preference. Theme is provided via React Context and consumed in all screens and components.
+The boilerplate includes a custom theme system supporting light and dark modes, toggled automatically from system preference. Colors, spacing, typography, and timing values are centralized in `app/theme/` and provided via React Context for consumption across all screens and components.
 
-Colors, spacing, typography, and timing values are all centralized in `app/theme/`.
-
-## App Blocking
-
-The app includes a curated list of 70+ distracting apps (social, video, gaming, shopping, messaging, music, news, dating) in `app/data/curatedApps.ts`. App icons are fetched at runtime from the iTunes Search API via the `useAppIcons` hook. Blocking schedules use time frames tied to days of the week.
+Customize colors, fonts, and spacing in the theme files to match your brand.
 
 ## Configuration
 
 | File | Purpose |
 |---|---|
 | `app/config/config.base.ts` | Base config (nav persistence, error catching, exit routes) |
-| `app/config/config.dev.ts` | Dev API base URL |
-| `app/config/config.prod.ts` | Prod API base URL |
+| `app/config/config.dev.ts` | Dev API base URL and settings |
+| `app/config/config.prod.ts` | Production API base URL and settings |
 | `app.json` | Expo app config (name, bundle IDs, icons, plugins) |
 | `app.config.ts` | Dynamic Expo config (iOS privacy manifests) |
 | `eas.json` | EAS build profiles |
 | `tsconfig.json` | TypeScript strict mode, path aliases (`@/*`, `@assets/*`) |
 
-App identifiers: iOS bundle `com.sami`, Android package `com.sami`, deep link scheme `sami://`
+**App identifiers:** Customize in `app.json` (iOS bundle ID, Android package name, deep link scheme)
