@@ -1,58 +1,38 @@
-// TODO: write documentation about fonts and typography along with guides on how to add custom fonts in own
-// markdown file and add links from here
+import {
+  DMSans_400Regular,
+  DMSans_400Regular_Italic,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans"
+import {
+  PlayfairDisplay_400Regular_Italic,
+  PlayfairDisplay_500Medium_Italic,
+} from "@expo-google-fonts/playfair-display"
+import {
+  InstrumentSerif_400Regular,
+  InstrumentSerif_400Regular_Italic,
+} from "@expo-google-fonts/instrument-serif"
 
-import { Platform } from "react-native"
-
-export const customFontsToLoad = {}
-
-const fonts = {
-  spaceGrotesk: {
-    // Using system font (SF Pro on iOS, Roboto on Android) via fontWeight.
-    light: "300",
-    normal: "400",
-    medium: "500",
-    semiBold: "600",
-    bold: "700",
-  },
-  helveticaNeue: {
-    // iOS only font.
-    thin: "HelveticaNeue-Thin",
-    light: "HelveticaNeue-Light",
-    normal: "Helvetica Neue",
-    medium: "HelveticaNeue-Medium",
-  },
-  courier: {
-    // iOS only font.
-    normal: "Courier",
-  },
-  sansSerif: {
-    // Android only font.
-    thin: "sans-serif-thin",
-    light: "sans-serif-light",
-    normal: "sans-serif",
-    medium: "sans-serif-medium",
-  },
-  monospace: {
-    // Android only font.
-    normal: "monospace",
-  },
+export const customFontsToLoad = {
+  DMSans_400Regular,
+  DMSans_400Regular_Italic,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+  PlayfairDisplay_400Regular_Italic,
+  PlayfairDisplay_500Medium_Italic,
+  InstrumentSerif_400Regular,
+  InstrumentSerif_400Regular_Italic,
 }
 
 export const typography = {
-  /**
-   * The fonts are available to use, but prefer using the semantic name.
-   */
-  fonts,
-  /**
-   * The primary font. Used in most places.
-   */
-  primary: fonts.spaceGrotesk,
-  /**
-   * An alternate font used for perhaps titles and stuff.
-   */
-  secondary: Platform.select({ ios: fonts.helveticaNeue, android: fonts.sansSerif }),
-  /**
-   * Lets get fancy with a monospace font!
-   */
-  code: Platform.select({ ios: fonts.courier, android: fonts.monospace }),
+  primary: "DMSans_400Regular",
+  primaryMedium: "DMSans_500Medium",
+  primarySemiBold: "DMSans_600SemiBold",
+  primaryBold: "DMSans_700Bold",
+  serif: "InstrumentSerif_400Regular",
+  serifItalic: "InstrumentSerif_400Regular_Italic",
+  display: "PlayfairDisplay_400Regular_Italic",
+  displayMedium: "PlayfairDisplay_500Medium_Italic",
 }

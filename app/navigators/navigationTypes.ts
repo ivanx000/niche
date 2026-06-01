@@ -9,6 +9,8 @@ export type MainStackParamList = {
   Home: undefined
   Settings: undefined
   Legal: { type: "privacy" | "terms" }
+  Interrupt: undefined
+  MicroAction: undefined
 }
 
 export type AppStackParamList = {

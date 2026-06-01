@@ -9,6 +9,7 @@ import { LegalScreen } from "@/screens/LegalScreen"
 import { OnboardingScreen } from "@/screens/OnboardingScreen"
 import { PaywallScreen } from "@/screens/PaywallScreen"
 import { useAppTheme } from "@/theme/context"
+import { N } from "@/theme/niche"
 
 import { MainNavigator } from "./MainNavigator"
 import type { AppStackParamList, NavigationProps } from "./navigationTypes"
@@ -35,8 +36,8 @@ const AppStack = () => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        navigationBarColor: colors.background,
-        contentStyle: { backgroundColor: colors.background },
+        navigationBarColor: N.stone,
+        contentStyle: { backgroundColor: N.stone },
       }}
       initialRouteName={initialRouteName}
     >
