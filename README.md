@@ -1,34 +1,40 @@
-# React Native Boilerplate
+# niche
 
-A modern React Native starter template built with Expo, TypeScript, and best practices. Includes pre-built screens, theme system, i18n support, state management setup, and EAS build configuration.
+A gentler relationship with the feed.
 
-## What's Included
+niche is a mobile app that helps users build more intentional habits around social media — not by blocking it, but by offering soft nudges, micro-actions, and quiet reflection moments.
 
-This boilerplate comes with:
-- Pre-built generic screens (Home, Onboarding, Paywall, Settings, Legal, Error)
-- Reusable UI component library
-- Light and dark theme system with custom colors and typography
-- Multi-language i18n setup (EN, ES, FR, AR, HI, JA, KO)
-- State management with React Context API and MMKV persistent storage
-- Navigation setup with React Navigation (native-stack, bottom-tabs)
-- Dev and production configuration management
-- Debugging and testing infrastructure
-- EAS build profiles for iOS and Android
+## Screens
+
+| Screen | Description |
+|---|---|
+| **Onboarding** | Pick an intention (Calm, Focus, Presence, Connection) and set a soft daily pause goal (1–5). No streaks, no pressure. |
+| **Home** | Daily dashboard: today's intention in a full-bleed sage band, Mood and Energy sliders, and a weekly pause recap with a magazine-style pullquote. |
+| **Soft Interrupt** | A bottom sheet that slides up over a blurred social feed after extended scrolling. Offers three micro-actions (breathe, stretch, sip water) with a coral timer banner. |
+| **Micro-action** | An animated 4-2-6 breathing exercise (3 cycles). Completes with an entrance-animated checkmark and a quiet "That's it." moment. |
+
+## Design System
+
+Palette: Stone `#F7F5F0` · Sage `#1D9E75` · Coral `#F0997B` · Ink `#2C2B26` · Muted `#8A8880`
+
+Fonts: DM Sans (primary) · Instrument Serif italic (soft accent) · Playfair Display italic (hero accent words)
+
+Tokens live in `app/theme/niche.ts`.
 
 ## Tech Stack
 
 | Category | Libraries |
 |---|---|
 | Framework | React Native 0.83.4, Expo 55, TypeScript 5.9 |
-| Navigation | React Navigation 7 (native-stack, bottom-tabs) |
+| Navigation | React Navigation 7 (native-stack) |
 | State | React Context API + MMKV persistent storage |
-| UI | react-native-reanimated, react-native-gesture-handler, react-native-heroicons |
-| Fonts | Space Grotesk via `@expo-google-fonts/space-grotesk` |
-| Networking | apisauce |
-| i18n | i18next + react-i18next (EN, ES, FR, AR, HI, JA, KO) |
+| Animations | react-native-reanimated, react-native-gesture-handler |
+| SVG | react-native-svg |
+| Blur | expo-blur |
+| Fonts | DM Sans, Instrument Serif, Playfair Display via `@expo-google-fonts` |
+| Purchases | react-native-purchases (RevenueCat) |
 | Notifications | expo-notifications |
 | Debugging | Reactotron + MMKV plugin |
-| Testing | Jest, Maestro (E2E) |
 | Build | EAS (Expo Application Services) |
 
 **JS Engine:** Hermes — **New Architecture:** Enabled
@@ -37,92 +43,61 @@ This boilerplate comes with:
 
 ```
 app/
-├── screens/          # Pre-built screens (Home, Onboarding, Paywall, Settings, Legal, Error)
-├── context/          # Global state management (AppStateContext, etc.)
-├── navigators/       # Navigation setup (App, Main navigators + types)
-├── components/       # Reusable UI component library
-├── theme/            # Colors, typography, spacing, dark/light theme system
-├── hooks/            # Shared hooks for common patterns
-├── models/           # TypeScript type definitions
-├── services/api/     # apisauce API client + error handling
-├── utils/            # Storage (MMKV wrapper), helpers, formatters
-├── i18n/             # Translation files per language
-├── config/           # Dev/prod configuration + base setup
-└── devtools/         # Reactotron config
+├── screens/          # Onboarding, Home, Interrupt, MicroAction + Settings, Legal, Error
+├── navigators/       # AppNavigator, MainNavigator, navigation types
+├── components/       # Screen, Text, Button, Header, Icon (used by secondary screens)
+├── theme/            # niche.ts tokens, colors, typography, spacing, theme context
+├── context/          # AppStateContext (onboarding), PurchasesContext (RevenueCat)
+├── utils/            # Storage (MMKV), crash reporting, safe area helpers
+├── i18n/             # English translations (used by error screen)
+├── config/           # Dev/prod configuration
+└── devtools/         # Reactotron (dev only)
 assets/
 ├── icons/
 └── images/
 ```
 
-## Included Screens
-
-| Screen | Description |
-|---|---|
-| **Home** | Main entry point — customize with your app's primary content |
-| **Onboarding** | User introduction flow — ready to adapt for your setup/tutorial needs |
-| **Paywall** | Monetization screen — template for subscription or premium features |
-| **Settings** | Settings and user preferences — theme toggle, language selection, etc. |
-| **Legal** | Terms and privacy — static content screens |
-| **Error** | Error boundary screen — handles crashes gracefully |
-
-## State Management
-
-The boilerplate uses React Context API for global state with MMKV for persistent local storage. Define your data models and contexts in `app/models/` and `app/context/` — no backend required unless you add one.
-
 ## Getting Started
 
 ```bash
-npm install --legacy-peer-deps
-npm run start
+npm install
 ```
 
-The app uses a custom dev client. Build it first before running on a device or simulator:
+The app uses a custom dev client — build it once before running on device:
 
 ```bash
 # iOS
 npm run build:ios:sim      # simulator
 npm run build:ios:device   # physical device
-npm run build:ios:preview  # TestFlight
-npm run build:ios:prod     # App Store
 
 # Android
-npm run build:android:sim      # emulator
-npm run build:android:device   # physical device
-npm run build:android:preview  # Google Play internal track
-npm run build:android:prod     # Play Store
+npm run build:android:sim
+npm run build:android:device
+```
+
+Then start the dev server:
+
+```bash
+npm run start
 ```
 
 **Prerequisites:** Node.js >= 20, Xcode (iOS), Android Studio (Android), EAS CLI (`npm i -g eas-cli`)
 
-## Other Scripts
+## Scripts
 
 ```bash
-npm run compile         # TypeScript type check
-npm run lint            # ESLint (auto-fix)
-npm run lint:check      # ESLint (check only)
-npm run test            # Jest unit tests
-npm run test:watch      # Jest in watch mode
-npm run test:maestro    # Maestro E2E tests
-npm run depcruise:graph # Generate dependency graph SVG
-npm run adb             # Android reverse port forwarding (dev)
+npm run compile       # TypeScript type check
+npm run lint          # ESLint with auto-fix
+npm run test          # Jest unit tests
+npm run start         # Expo dev server
 ```
-
-## Theme System
-
-The boilerplate includes a custom theme system supporting light and dark modes, toggled automatically from system preference. Colors, spacing, typography, and timing values are centralized in `app/theme/` and provided via React Context for consumption across all screens and components.
-
-Customize colors, fonts, and spacing in the theme files to match your brand.
 
 ## Configuration
 
 | File | Purpose |
 |---|---|
-| `app/config/config.base.ts` | Base config (nav persistence, error catching, exit routes) |
-| `app/config/config.dev.ts` | Dev API base URL and settings |
-| `app/config/config.prod.ts` | Production API base URL and settings |
-| `app.json` | Expo app config (name, bundle IDs, icons, plugins) |
-| `app.config.ts` | Dynamic Expo config (iOS privacy manifests) |
+| `app/theme/niche.ts` | Design tokens — palette, fonts |
+| `app/config/config.base.ts` | Navigation persistence, error catching |
+| `app.json` | Expo app config (name, bundle IDs, icons) |
 | `eas.json` | EAS build profiles |
-| `tsconfig.json` | TypeScript strict mode, path aliases (`@/*`, `@assets/*`) |
-
-**App identifiers:** Customize in `app.json` (iOS bundle ID, Android package name, deep link scheme)
+| `tsconfig.json` | TypeScript config, path aliases (`@/*`) |
