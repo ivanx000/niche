@@ -12,7 +12,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 
 import { AppStateProvider } from "./context/AppStateContext"
-import { PurchasesProvider } from "./context/PurchasesContext"
 import { initI18n } from "./i18n"
 import { AppNavigator } from "./navigators/AppNavigator"
 import { useNavigationPersistence } from "./navigators/navigationUtilities"
@@ -62,15 +61,13 @@ export function App() {
       <SafeAreaProvider initialMetrics={initialWindowMetrics}>
         <KeyboardProvider>
           <AppStateProvider>
-            <PurchasesProvider>
-              <ThemeProvider initialContext="light">
-                <AppNavigator
-                  linking={{ prefixes: [prefix], config }}
-                  initialState={initialNavigationState}
-                  onStateChange={onNavigationStateChange}
-                />
-              </ThemeProvider>
-            </PurchasesProvider>
+            <ThemeProvider initialContext="light">
+              <AppNavigator
+                linking={{ prefixes: [prefix], config }}
+                initialState={initialNavigationState}
+                onStateChange={onNavigationStateChange}
+              />
+            </ThemeProvider>
           </AppStateProvider>
         </KeyboardProvider>
       </SafeAreaProvider>

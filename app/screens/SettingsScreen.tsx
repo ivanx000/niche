@@ -1,4 +1,4 @@
-import { Alert, Linking, StyleSheet, TouchableOpacity, View, Text } from "react-native"
+import { Linking, StyleSheet, TouchableOpacity, View, Text } from "react-native"
 import * as Application from "expo-application"
 import { ChevronRightIcon } from "react-native-heroicons/outline"
 import Svg, { Path } from "react-native-svg"
@@ -6,7 +6,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { BoilerplateConfig } from "@/config/boilerplate.config"
 import { useAppState } from "@/context/AppStateContext"
-import { usePurchases } from "@/context/PurchasesContext"
 import type { MainStackScreenProps } from "@/navigators/navigationTypes"
 import { N } from "@/theme/niche"
 
@@ -19,24 +18,7 @@ const INTENTIONS = [
 
 export function SettingsScreen({ navigation }: MainStackScreenProps<"Settings">) {
   const insets = useSafeAreaInsets()
-  const { isPremium, restorePurchases, customerInfo } = usePurchases()
   const { selectedIntentions, setIntentions, dailyGoal, setDailyGoal } = useAppState()
-
-  const handleRestore = async () => {
-    const success = await restorePurchases()
-    Alert.alert(
-      success ? "Restored" : "Nothing to restore",
-      success ? "Your subscription has been restored." : "No active subscription found.",
-    )
-  }
-
-  const subscriptionStatus = () => {
-    if (!customerInfo) return "Loading…"
-    const entitlement = customerInfo.entitlements.active[BoilerplateConfig.revenueCat.entitlementName]
-    if (!entitlement) return "Free"
-    const exp = entitlement.expirationDate
-    return exp ? `Renews ${new Date(exp).toLocaleDateString()}` : "Active"
-  }
 
   const toggleIntention = (key: string) => {
     const next = selectedIntentions.includes(key)
@@ -131,24 +113,6 @@ export function SettingsScreen({ navigation }: MainStackScreenProps<"Settings">)
             </View>
           </View>
           <Text style={s.goalNote}>No streaks. No penalties. Change it anytime.</Text>
-        </View>
-
-        {/* Subscription */}
-        <Text style={s.sectionLabel}>Subscription</Text>
-        <View style={s.card}>
-          <SettingsRow label="Plan" value={isPremium ? "Premium" : "Free"} last={!isPremium} />
-          {isPremium && (
-            <SettingsRow label="Status" value={subscriptionStatus()} />
-          )}
-          {isPremium ? (
-            <SettingsRow
-              label="Manage subscription"
-              onPress={() => Linking.openURL("https://apps.apple.com/account/subscriptions")}
-              chevron last
-            />
-          ) : (
-            <SettingsRow label="Restore purchases" onPress={handleRestore} chevron last />
-          )}
         </View>
 
         {/* Legal */}

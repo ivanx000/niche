@@ -1,5 +1,5 @@
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useMemo } from "react"
-import { useMMKVBoolean, useMMKVNumber, useMMKVString } from "react-native-mmkv"
+import { useMMKVNumber, useMMKVString } from "react-native-mmkv"
 
 export interface PauseRecord {
   timestamp: number   // Unix ms
@@ -7,23 +7,15 @@ export interface PauseRecord {
 }
 
 type AppStateContextType = {
-  // Onboarding
-  hasCompletedOnboarding: boolean
-  setOnboardingComplete: () => void
-
-  // Intentions
   selectedIntentions: string[]
   setIntentions: (intentions: string[]) => void
 
-  // Daily goal
   dailyGoal: number
   setDailyGoal: (goal: number) => void
 
-  // Pause log
   pauseLog: PauseRecord[]
   addPause: (actionType: string) => void
 
-  // Computed — derived from pauseLog
   pausesToday: number
   pausesThisWeek: number[]   // [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
   weekTotal: number
@@ -32,12 +24,11 @@ type AppStateContextType = {
 
 const AppStateContext = createContext<AppStateContextType | null>(null)
 
-// Returns how many pauses fell on each day of the current Mon–Sun week.
 function computeWeek(log: PauseRecord[]): number[] {
   const now = new Date()
-  const dow = now.getDay()                          // 0=Sun … 6=Sat
+  const dow = now.getDay()
   const monday = new Date(now)
-  monday.setDate(now.getDate() - ((dow + 6) % 7))  // rewind to Monday
+  monday.setDate(now.getDate() - ((dow + 6) % 7))
   monday.setHours(0, 0, 0, 0)
 
   const counts = [0, 0, 0, 0, 0, 0, 0]
@@ -50,18 +41,13 @@ function computeWeek(log: PauseRecord[]): number[] {
 }
 
 function todayDayIndex(): number {
-  return (new Date().getDay() + 6) % 7   // 0=Mon … 6=Sun
+  return (new Date().getDay() + 6) % 7
 }
 
 export const AppStateProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useMMKVBoolean(
-    "AppState.hasCompletedOnboarding",
-  )
   const [intentionsRaw, setIntentionsRaw] = useMMKVString("AppState.selectedIntentions")
   const [storedGoal, setStoredGoal] = useMMKVNumber("AppState.dailyGoal")
   const [pauseLogRaw, setPauseLogRaw] = useMMKVString("AppState.pauseLog")
-
-  // ── derived values ──────────────────────────────────────────────────────────
 
   const selectedIntentions = useMemo<string[]>(() => {
     if (!intentionsRaw) return ["calm", "presence"]
@@ -83,12 +69,6 @@ export const AppStateProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const weekTotal = useMemo(() => pausesThisWeek.reduce((s, n) => s + n, 0), [pausesThisWeek])
 
-  // ── actions ──────────────────────────────────────────────────────────────────
-
-  const setOnboardingComplete = useCallback(() => {
-    setHasCompletedOnboarding(true)
-  }, [setHasCompletedOnboarding])
-
   const setIntentions = useCallback((intentions: string[]) => {
     setIntentionsRaw(JSON.stringify(intentions))
   }, [setIntentionsRaw])
@@ -103,12 +83,8 @@ export const AppStateProvider: FC<PropsWithChildren> = ({ children }) => {
     setPauseLogRaw(JSON.stringify(updated))
   }, [pauseLog, setPauseLogRaw])
 
-  // ── context value ─────────────────────────────────────────────────────────────
-
   const value = useMemo<AppStateContextType>(
     () => ({
-      hasCompletedOnboarding: !!hasCompletedOnboarding,
-      setOnboardingComplete,
       selectedIntentions,
       setIntentions,
       dailyGoal,
@@ -121,7 +97,6 @@ export const AppStateProvider: FC<PropsWithChildren> = ({ children }) => {
       todayIndex,
     }),
     [
-      hasCompletedOnboarding, setOnboardingComplete,
       selectedIntentions, setIntentions,
       dailyGoal, setDailyGoal,
       pauseLog, addPause,
