@@ -11,26 +11,70 @@ import {
 import Svg, { Circle, Path } from "react-native-svg"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { useAppState } from "@/context/AppStateContext"
 import type { MainStackScreenProps } from "@/navigators/navigationTypes"
 import { N } from "@/theme/niche"
 
-const WEEK = [2, 1, 4, 0, 3, 2, 1]
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const DAY_LABELS = ["M", "T", "W", "T", "F", "S", "S"]
-const TODAY = 6
-const WEEK_TOTAL = 13
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+
+function formatDate(): string {
+  const now = new Date()
+  return `${DAYS[now.getDay()]} · ${now.getDate()} ${MONTHS[now.getMonth()]}`
+}
+
+function getGreeting(): string {
+  const h = new Date().getHours()
+  if (h < 12) return "Good morning."
+  if (h < 17) return "Good afternoon."
+  return "Good evening."
+}
+
+// Maps each intention key to a two-line phrase shown in the sage band.
+const INTENTION_PHRASES: Record<string, string> = {
+  calm:       "Let things be slow today.\nNo rush, no force.",
+  focus:      "One thing at a time.\nThat's enough.",
+  presence:   "Notice what's here.\nJust this moment.",
+  connection: "Be with the people\naround you today.",
+}
+
+// Underlined accent word for each intention (shown inline in the phrase).
+const INTENTION_ACCENTS: Record<string, { before: string; accent: string; after: string }> = {
+  calm:       { before: "Let things be ", accent: "slow",      after: " today.\nNo rush, no force." },
+  focus:      { before: "",                accent: "One thing", after: " at a time.\nThat's enough." },
+  presence:   { before: "Notice what's ",  accent: "here",     after: ".\nJust this moment." },
+  connection: { before: "Be with the ",    accent: "people",   after: "\naround you today." },
+}
 
 function wordFor(v: number, words: string[]): string {
-  const i = Math.min(words.length - 1, Math.floor((v / 100) * words.length))
-  return words[i]
+  return words[Math.min(words.length - 1, Math.floor((v / 100) * words.length))]
 }
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
   const insets = useSafeAreaInsets()
+  const {
+    selectedIntentions,
+    pausesToday,
+    pausesThisWeek,
+    weekTotal,
+    todayIndex,
+  } = useAppState()
+
   const [mood, setMood] = useState(62)
   const [energy, setEnergy] = useState(66)
 
-  const moodWord = wordFor(mood, ["heavy", "foggy", "okay", "spacious"])
-  const energyWord = wordFor(energy, ["low", "soft", "steady", "lively"])
+  const moodWord   = wordFor(mood,   ["heavy", "foggy", "okay", "spacious"])
+  const energyWord = wordFor(energy, ["low",   "soft",  "steady", "lively"])
+
+  // Pick the first selected intention for the sage band (or fall back to calm).
+  const activeIntention = selectedIntentions[0] ?? "calm"
+  const phrase = INTENTION_ACCENTS[activeIntention] ?? INTENTION_ACCENTS.calm
 
   return (
     <View style={[s.root, { backgroundColor: N.stone }]}>
@@ -38,7 +82,7 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
 
       {/* top row */}
       <View style={s.topRow}>
-        <Text style={s.dateLabel}>Sun · 16 May</Text>
+        <Text style={s.dateLabel}>{formatDate()}</Text>
         <TouchableOpacity
           style={s.menuBtn}
           onPress={() => navigation.navigate("Settings")}
@@ -59,7 +103,7 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
       >
         {/* greeting */}
         <View style={s.greeting}>
-          <Text style={s.greetingName}>Hi Léa.</Text>
+          <Text style={s.greetingName}>{getGreeting()}</Text>
           <Text style={s.greetingTagline}>Glad you're here.</Text>
         </View>
 
@@ -68,15 +112,15 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
           <View style={s.sageBlob} />
           <Text style={s.intentionLabel}>Today's intention</Text>
           <Text style={s.intentionText}>
-            {"A little more "}
-            <Text style={s.intentionAccent}>presence</Text>
-            {" than yesterday.\nNotice one thing fully."}
+            {phrase.before}
+            <Text style={s.intentionAccent}>{phrase.accent}</Text>
+            {phrase.after}
           </Text>
           <TouchableOpacity
             style={s.swapBtn}
-            onPress={() => navigation.navigate("Interrupt")}
+            onPress={() => navigation.navigate("Settings")}
           >
-            <Text style={s.swapBtnText}>Swap intention</Text>
+            <Text style={s.swapBtnText}>Change intention</Text>
             <Svg width={11} height={11} viewBox="0 0 11 11">
               <Path
                 d="M3 1l4 4.5L3 10"
@@ -123,43 +167,38 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
           <View style={s.weekCard}>
             <Text style={s.weekEyebrow}>This week</Text>
             <View style={s.weekPullquote}>
-              <Text style={s.weekNumber}>{WEEK_TOTAL}</Text>
+              <Text style={s.weekNumber}>{weekTotal}</Text>
               <View style={s.weekCaption}>
                 <Text style={s.weekCaptionMain}>mindful pauses</Text>
                 <Text style={s.weekCaptionSub}>
-                  {"Your average is around 2 a day. Today you've taken "}
+                  {"Today you've taken "}
                   <Text style={{ color: N.sage, fontFamily: "DMSans_500Medium" }}>
-                    {WEEK[TODAY]}
+                    {pausesToday}
                   </Text>
-                  {"."}
+                  {`.`}
                 </Text>
               </View>
             </View>
             <View style={s.weekDivider} />
             <View style={s.weekDots}>
-              {WEEK.map((c, i) => {
-                const isToday = i === TODAY
+              {pausesThisWeek.map((c, i) => {
+                const isToday = i === todayIndex
                 return (
                   <View key={i} style={s.weekDayCol}>
                     <View style={s.weekDotStack}>
-                      {Array.from({ length: 5 }).map((_, k) => {
-                        const filled = k < c
-                        return (
-                          <View
-                            key={k}
-                            style={[
-                              s.dot,
-                              {
-                                backgroundColor: filled
-                                  ? isToday
-                                    ? N.sage
-                                    : N.ink
-                                  : N.sand,
-                              },
-                            ]}
-                          />
-                        )
-                      })}
+                      {Array.from({ length: 5 }).map((_, k) => (
+                        <View
+                          key={k}
+                          style={[
+                            s.dot,
+                            {
+                              backgroundColor: k < c
+                                ? isToday ? N.sage : N.ink
+                                : N.sand,
+                            },
+                          ]}
+                        />
+                      ))}
                     </View>
                     <Text
                       style={[
@@ -184,7 +223,7 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
           <Text style={s.quoteText}>"What you notice grows."</Text>
         </View>
 
-        {/* quick access to interrupt + microaction */}
+        {/* quick access */}
         <View style={s.quickRow}>
           <TouchableOpacity
             style={s.quickBtn}
@@ -204,7 +243,7 @@ export function HomeScreen({ navigation }: MainStackScreenProps<"Home">) {
   )
 }
 
-// ─── Custom slider ──────────────────────────────────────────────────────────
+// ─── Custom slider ────────────────────────────────────────────────────────────
 
 interface NSliderProps {
   label: string
@@ -219,7 +258,6 @@ interface NSliderProps {
 
 function NSlider({ label, value, onChange, accent, track, leftWord, rightWord, readout }: NSliderProps) {
   const trackWidth = useRef(0)
-  const currentValue = useRef(value)
 
   const panResponder = useRef(
     PanResponder.create({
@@ -227,18 +265,12 @@ function NSlider({ label, value, onChange, accent, track, leftWord, rightWord, r
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (e) => {
         if (trackWidth.current > 0) {
-          const x = e.nativeEvent.locationX
-          const v = Math.max(0, Math.min(100, (x / trackWidth.current) * 100))
-          currentValue.current = v
-          onChange(v)
+          onChange(Math.max(0, Math.min(100, (e.nativeEvent.locationX / trackWidth.current) * 100)))
         }
       },
       onPanResponderMove: (e) => {
         if (trackWidth.current > 0) {
-          const x = e.nativeEvent.locationX
-          const v = Math.max(0, Math.min(100, (x / trackWidth.current) * 100))
-          currentValue.current = v
-          onChange(v)
+          onChange(Math.max(0, Math.min(100, (e.nativeEvent.locationX / trackWidth.current) * 100)))
         }
       },
     })
@@ -255,13 +287,8 @@ function NSlider({ label, value, onChange, accent, track, leftWord, rightWord, r
         style={sl.hitArea}
         onLayout={e => { trackWidth.current = e.nativeEvent.layout.width }}
       >
-        {/* track */}
         <View style={[sl.track, { backgroundColor: track }]} />
-        {/* filled */}
-        <View
-          style={[sl.filled, { width: `${value}%` as `${number}%`, backgroundColor: accent }]}
-        />
-        {/* thumb */}
+        <View style={[sl.filled, { width: `${value}%` as `${number}%`, backgroundColor: accent }]} />
         <View style={[sl.thumbWrap, { left: `${value}%` as `${number}%` }]}>
           <Animated.View style={[sl.pulse, { backgroundColor: accent }]} />
           <View style={[sl.thumb, { backgroundColor: accent }]} />
@@ -274,6 +301,8 @@ function NSlider({ label, value, onChange, accent, track, leftWord, rightWord, r
     </View>
   )
 }
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const sl = StyleSheet.create({
   labelRow: {
@@ -348,12 +377,8 @@ const sl = StyleSheet.create({
   },
 })
 
-// ─── Main styles ─────────────────────────────────────────────────────────────
-
 const s = StyleSheet.create({
-  root: {
-    flex: 1,
-  },
+  root: { flex: 1 },
   topRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -582,7 +607,6 @@ const s = StyleSheet.create({
     borderColor: N.border,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent",
   },
   quickBtnText: {
     fontSize: 14,

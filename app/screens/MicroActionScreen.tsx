@@ -10,6 +10,7 @@ import {
 import Svg, { Path, Circle } from "react-native-svg"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 
+import { useAppState } from "@/context/AppStateContext"
 import type { MainStackScreenProps } from "@/navigators/navigationTypes"
 import { N } from "@/theme/niche"
 
@@ -33,9 +34,17 @@ const PHASE_DUR: Record<string, string> = {
   exhale: "6 sec",
 }
 
-export function MicroActionScreen({ navigation }: MainStackScreenProps<"MicroAction">) {
+export function MicroActionScreen({ navigation, route }: MainStackScreenProps<"MicroAction">) {
   const insets = useSafeAreaInsets()
+  const { addPause } = useAppState()
   const [done, setDone] = useState(false)
+
+  const actionType = (route.params as { actionType?: string } | undefined)?.actionType ?? "breathe"
+
+  const handleDone = () => {
+    addPause(actionType)
+    setDone(true)
+  }
 
   const startBreathing = () => setDone(false)
 
@@ -43,7 +52,7 @@ export function MicroActionScreen({ navigation }: MainStackScreenProps<"MicroAct
     return <CompletionMoment insets={insets} onAgain={startBreathing} onHome={() => navigation.navigate("Home")} />
   }
 
-  return <BreathingView insets={insets} onBack={() => navigation.goBack()} onDone={() => setDone(true)} />
+  return <BreathingView insets={insets} onBack={() => navigation.goBack()} onDone={handleDone} />
 }
 
 // ─── Breathing view ───────────────────────────────────────────────────────────

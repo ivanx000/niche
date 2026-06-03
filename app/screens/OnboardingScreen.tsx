@@ -15,6 +15,8 @@ import { usePurchases } from "@/context/PurchasesContext"
 import type { AppStackScreenProps } from "@/navigators/navigationTypes"
 import { N } from "@/theme/niche"
 
+const INTENTIONS_DEFAULT = ["calm", "presence"]
+
 const INTENTIONS = [
   { key: "calm",       n: "01", label: "Calm",       hint: "less reactive" },
   { key: "focus",      n: "02", label: "Focus",      hint: "one thing fully" },
@@ -23,16 +25,20 @@ const INTENTIONS = [
 ]
 
 export function OnboardingScreen({ navigation }: AppStackScreenProps<"Onboarding">) {
-  const { setOnboardingComplete } = useAppState()
+  const { setOnboardingComplete, setIntentions, setDailyGoal } = useAppState()
   const { isPremium } = usePurchases()
   const insets = useSafeAreaInsets()
-  const [picked, setPicked] = useState<string[]>(["calm", "presence"])
-  const [goal, setGoal] = useState(3)
+  const [picked, setPicked] = useState<string[]>(INTENTIONS_DEFAULT)
+  const [goal, setGoalState] = useState(3)
 
   const toggle = (k: string) =>
     setPicked(p => (p.includes(k) ? p.filter(x => x !== k) : [...p, k]))
 
+  const setGoal = (n: number) => setGoalState(n)
+
   const finish = () => {
+    setIntentions(picked.length ? picked : INTENTIONS_DEFAULT)
+    setDailyGoal(goal)
     setOnboardingComplete()
     if (isPremium) {
       navigation.reset({ index: 0, routes: [{ name: "Main" }] })

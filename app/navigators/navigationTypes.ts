@@ -10,7 +10,7 @@ export type MainStackParamList = {
   Settings: undefined
   Legal: { type: "privacy" | "terms" }
   Interrupt: undefined
-  MicroAction: undefined
+  MicroAction: { actionType?: string } | undefined
 }
 
 export type AppStackParamList = {

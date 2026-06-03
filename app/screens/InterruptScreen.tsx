@@ -57,7 +57,7 @@ export function InterruptScreen({ navigation }: MainStackScreenProps<"Interrupt"
 
   const proceed = () => {
     if (!pickedAction) return
-    navigation.navigate("MicroAction")
+    navigation.navigate("MicroAction", { actionType: pickedAction })
   }
 
   return (
