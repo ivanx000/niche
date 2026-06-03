@@ -17,10 +17,6 @@ Information We Collect
 
 We do not collect any personally identifiable information. The app operates entirely on-device. Your data is stored locally on your device and never transmitted to our servers.
 
-We use RevenueCat to process subscription purchases. RevenueCat may collect anonymized purchase data in accordance with their own privacy policy.
-
-Apple's native App Store handles all payment processing. We do not have access to your payment details.
-
 How We Use Information
 
 All data you enter into ${APP_NAME} stays on your device. We do not sell, share, or transmit your data to third parties.
