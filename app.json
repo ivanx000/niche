@@ -1,7 +1,7 @@
 {
-  "name": "My App",
-  "slug": "my-app",
-  "scheme": "my-app",
+  "name": "niche",
+  "slug": "niche",
+  "scheme": "niche",
   "version": "1.0.0",
   "orientation": "portrait",
   "userInterfaceStyle": "light",
@@ -16,7 +16,7 @@
   ],
   "android": {
     "icon": "./assets/icon.png",
-    "package": "com.example.myapp",
+    "package": "com.ivanxie.niche",
     "adaptiveIcon": {
       "foregroundImage": "./assets/icon.png",
       "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
@@ -27,7 +27,7 @@
   "ios": {
     "icon": "./assets/icon.png",
     "supportsTablet": true,
-    "bundleIdentifier": "com.example.myapp"
+    "bundleIdentifier": "com.ivanxie.niche"
   },
   "web": {
     "favicon": "./assets/icon.png",
@@ -37,14 +37,13 @@
     "expo-localization",
     "expo-font",
     "expo-notifications",
-    "react-native-purchases",
     [
       "expo-splash-screen",
       {
         "image": "./assets/icon.png",
         "imageWidth": 300,
         "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#F7F5F0"
       }
     ],
     [
